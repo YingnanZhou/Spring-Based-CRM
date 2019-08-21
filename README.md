@@ -11,8 +11,12 @@ Mybatis
 
 Shiro
 
+### featrues:
+*	Designed a CRM system that can record potential customers, loss customers, and follow up existing customers.
+*	Followed MVC pattern and Java 3-tier architecture, used jQuery, freemarker and AJAX in front-end.
+*	Utilized Shiro for user authentication, RBAC, password encryption(MD5), and caching current user’s permissions.
 
-### intro
+### intro:
 
 * git clone this project
 
