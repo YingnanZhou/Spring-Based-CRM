@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyn.crm.mapper.CustomerTransferMapper">
+  <resultMap id="BaseResultMap" type="com.zyn.crm.domain.CustomerTransfer">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
+    <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <association property="customer" javaType="customer" columnPrefix="c_">
+      <id column="id" property="id"></id>
+      <result column="name" property="name"></result>
+    </association>
+    <association property="operator" javaType="employee" columnPrefix="operator_">
+      <id column="id" property="id"></id>
+      <result column="name" property="name"></result>
+    </association>
+    <association property="oldSeller" javaType="employee" columnPrefix="oldSeller_">
+      <id column="id" property="id"></id>
+      <result column="name" property="name"></result>
+    </association>
+    <association property="newSeller" javaType="employee" columnPrefix="newSeller_">
+      <id column="id" property="id"></id>
+      <result column="name" property="name"></result>
+    </association>
+
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from customertransfer
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.zyn.crm.domain.CustomerTransfer" useGeneratedKeys="true">
+    insert into customertransfer (customer_id, operator_id, operate_time, 
+      oldSeller_id, newSeller_id, reason
+      )
+    values (#{customer.id,jdbcType=BIGINT}, #{operator.id,jdbcType=BIGINT}, #{operateTime,jdbcType=TIMESTAMP},
+      #{oldSeller.id,jdbcType=BIGINT}, #{newSeller.id,jdbcType=BIGINT}, #{reason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zyn.crm.domain.CustomerTransfer">
+    update customertransfer
+    set customer_id = #{customer.id,jdbcType=BIGINT},
+      operator_id = #{operator.id,jdbcType=BIGINT},
+      operate_time = #{operateTime,jdbcType=TIMESTAMP},
+      oldSeller_id = #{oldSeller.id,jdbcType=BIGINT},
+      newSeller_id = #{newSeller.id,jdbcType=BIGINT},
+      reason = #{reason,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, customer_id, operator_id, operate_time, oldSeller_id, newSeller_id, reason
+    from customertransfer
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, customer_id, operator_id, operate_time, oldSeller_id, newSeller_id, reason
+    from customertransfer
+  </select>
+    <select id="queryForList" resultMap="BaseResultMap" parameterType="com.zyn.crm.query.QueryObject">
+      SELECT
+        ct.customer_id,
+        ct.operator_id,
+        ct.operate_time,
+        ct.oldSeller_id,
+        ct.newSeller_id,
+        ct.reason,
+        c.id c_id,
+        c.NAME c_name,
+        operator.id operator_id,
+        operator.NAME operator_name,
+        oldSeller.id oldSeller_id,
+        oldSeller.NAME oldSeller_name,
+        newSeller.id newSeller_id,
+        newSeller.NAME newSeller_name
+      FROM
+        customertransfer ct
+        LEFT JOIN customer c ON c.id = ct.customer_id
+        LEFT JOIN employee operator ON operator.id = ct.operator_id
+        LEFT JOIN employee oldSeller ON oldSeller.id = ct.oldSeller_id
+        LEFT JOIN employee newSeller ON newSeller.id = ct.newSeller_id
+
+      <where>
+      <if test="keyword != null and keyword != ''">
+        and c.name like concat('%',#{keyword},'%')
+      </if>
+    </where>
+    </select>
+</mapper>

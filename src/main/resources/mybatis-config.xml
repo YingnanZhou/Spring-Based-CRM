@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <settings>
+        <!-- 开启懒加载 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 配置积极懒加载 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 调用哪些方法出发懒加载 -->
+        <setting name="lazyLoadTriggerMethods" value="clone"/>
+    </settings>
+    <plugins>
+        <!--分页插件-->
+        <!-- com.github.pagehelper为PageHelper类所在包名 -->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!--当pageNum<=0时，将pageNum设置为1-->
+            <!--当pageNum>pages时，将pageNum设置为pages-->
+            <!--合理化分页-->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+
+</configuration>
+
+ 

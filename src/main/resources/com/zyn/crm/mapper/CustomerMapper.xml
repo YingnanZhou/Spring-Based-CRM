@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyn.crm.mapper.CustomerMapper">
+    <resultMap id="BaseResultMap" type="com.zyn.crm.domain.Customer">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="qq" jdbcType="VARCHAR" property="qq"/>
+        <result column="input_time" jdbcType="TIMESTAMP" property="inputTime"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+
+        <association property="job" javaType="systemDictionaryItem" columnPrefix="job_">
+            <id column="id" property="id"></id>
+            <result column="title" property="title"></result>
+        </association>
+        <association property="source" javaType="systemDictionaryItem" columnPrefix="source_">
+            <id column="id" property="id"></id>
+            <result column="title" property="title"></result>
+        </association>
+        <association property="seller" javaType="employee" columnPrefix="seller_">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+        </association>
+        <association property="inputUser" javaType="employee" columnPrefix="inputUser_">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+        </association>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM customer
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.zyn.crm.domain.Customer"
+            useGeneratedKeys="true">
+        INSERT INTO customer (name, age, gender,
+                              tel, qq, job_id, source_id,
+                              seller_id, inputUser_id, input_time,
+                              status)
+        VALUES (#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, #{gender,jdbcType=INTEGER},
+                                          #{tel,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{job.id,jdbcType=BIGINT},
+                                          #{source.id,jdbcType=BIGINT},
+                                          #{seller.id,jdbcType=BIGINT}, #{inputUser.id,jdbcType=BIGINT},
+                                          #{inputTime,jdbcType=TIMESTAMP},
+                                          #{status,jdbcType=INTEGER})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.zyn.crm.domain.Customer">
+        UPDATE customer
+        SET name         = #{name,jdbcType=VARCHAR},
+            age          = #{age,jdbcType=INTEGER},
+            gender       = #{gender,jdbcType=INTEGER},
+            tel          = #{tel,jdbcType=VARCHAR},
+            qq           = #{qq,jdbcType=VARCHAR},
+            job_id       = #{job.id,jdbcType=BIGINT},
+            source_id    = #{source.id,jdbcType=BIGINT},
+            seller_id    = #{seller.id,jdbcType=BIGINT},
+            status       = #{status,jdbcType=INTEGER}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateStatus">
+        update customer set status=#{status} where id=#{cid}
+    </update>
+    <update id="updateSellerId">
+        update customer set seller_id = #{curEmpId} where id = #{customerId}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            id,
+            name,
+            age,
+            gender,
+            tel,
+            qq,
+            job_id,
+            source_id,
+            seller_id,
+            inputUser_id,
+            input_time,
+            status
+        FROM customer
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <!--<select id="selectAll" resultMap="BaseResultMap">-->
+    <!--select id, name, age, gender, tel, qq, job_id, source_id, seller_id, inputUser_id, -->
+    <!--input_time, status-->
+    <!--from customer-->
+    <!--</select>-->
+    <select id="queryForList" resultMap="BaseResultMap">
+        SELECT
+            c.id,
+            c.NAME,
+            c.age,
+            c.gender,
+            c.tel,
+            c.qq,
+            c.job_id,
+            c.source_id,
+            c.seller_id,
+            c.inputUser_id,
+            c.input_time,
+            c.`status`,
+            job.id         job_id,
+            job.title      job_title,
+            source.id      source_id,
+            source.title   source_title,
+            seller.id      seller_id,
+            seller.NAME    seller_name,
+            inputUser.id   inputUser_id,
+            inputUser.name inputUser_name
+        FROM
+            customer c
+            LEFT JOIN systemdictionaryitem job ON c.job_id = job.id
+            LEFT JOIN systemdictionaryitem source ON c.source_id = source.id
+            LEFT JOIN employee seller ON c.seller_id = seller.id
+            LEFT JOIN employee inputUser ON c.inputUser_id = inputUser.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (c.name like concat('%',#{keyword},'%') or c.tel like concat('%',#{keyword},'%'))
+            </if>
+            <if test="status != null and status !=-1">
+                AND c.status = #{status}
+            </if>
+            <if test="sellerId != null and sellerId !=-1">
+                AND c.seller_id = #{sellerId}
+            </if>
+        </where>
+    </select>
+    <select id="updateNewSeller" parameterType="customer">
+        update customer set seller_id = #{seller.id} where id = #{id}
+    </select>
+</mapper>

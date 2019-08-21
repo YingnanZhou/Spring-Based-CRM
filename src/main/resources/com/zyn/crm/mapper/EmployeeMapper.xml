@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyn.crm.mapper.EmployeeMapper">
+    <resultMap id="BaseResultMap" type="com.zyn.crm.domain.Employee">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <result column="admin" jdbcType="BIT" property="admin"/>
+        <result column="dept_id" jdbcType="BIGINT" property="deptId"/>
+
+        <association property="dept" javaType="com.zyn.crm.domain.Department" columnPrefix="d_">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="sn" property="sn"/>
+        </association>
+
+        <collection property="roles" column="id" select="com.zyn.crm.mapper.RoleMapper.selectByEmployeeId"/>
+
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM employee
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <delete id="deleteRelation">
+        DELETE FROM employee_role
+        WHERE employee_id = #{employeeId}
+    </delete>
+    <delete id="deleteByEmployeeIds">
+        DELETE from employee where id in
+        <foreach collection="array" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.zyn.crm.domain.Employee"
+            useGeneratedKeys="true">
+        INSERT INTO employee (name, password, email,
+                              age, admin, dept_id)
+        VALUES (#{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+                #{age,jdbcType=INTEGER}, #{admin,jdbcType=BIT}, #{dept.id,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertRelation">
+        INSERT INTO employee_role (employee_id, role_id) VALUES (#{employeeId}, #{roleId})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.zyn.crm.domain.Employee">
+        UPDATE employee
+        SET name    = #{name,jdbcType=VARCHAR},
+            email   = #{email,jdbcType=VARCHAR},
+            age     = #{age,jdbcType=INTEGER},
+            admin   = #{admin,jdbcType=BIT},
+            dept_id = #{dept.id,jdbcType=BIGINT}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="queryForList" resultMap="BaseResultMap">
+        SELECT e.id,e.name,e.password,e.email,e.age,e.admin,e.dept_id,d.id AS d_id,d.name AS d_name,d.sn AS d_sn
+        FROM employee e LEFT JOIN department d ON
+        e.dept_id = d.id
+        <include refid="base_sql"/>
+
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            e.id,
+            e.name,
+            e.password,
+            e.email,
+            e.age,
+            e.admin,
+            e.dept_id,
+            d.id   AS d_id,
+            d.name AS d_name,
+            d.sn   AS d_sn
+        FROM employee e
+            LEFT JOIN department d ON e.dept_id = d.id
+        WHERE e.id = #{id}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+            id,
+            name,
+            password,
+            email,
+            age,
+            admin,
+            dept_id
+        FROM employee
+    </select>
+
+
+    <select id="selectByUsername" resultType="employee">
+        SELECT
+            id,
+            name,
+            password,
+            admin,
+            age,
+            email,
+            dept_id
+        FROM employee
+        WHERE name = #{username}
+    </select>
+    <select id="selectEmployeeBySpecRoles" resultType="employee">
+        SELECT
+            DISTINCT e.*
+        FROM employee e LEFT JOIN employee_role er ON e.id = er.employee_id
+            LEFT JOIN role r ON er.role_id = r.id
+        WHERE r.sn = #{market_manager} OR r.sn = #{market}
+    </select>
+    <sql id="base_sql">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (e.name like concat('%',#{keyword},'%') or e.email like concat('%',#{keyword},'%'))
+            </if>
+            <if test="deptId !=null  and deptId !=-1">
+                AND e.dept_id = #{deptId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

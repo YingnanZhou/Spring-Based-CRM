@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login</title>
+    <link rel="stylesheet" href="/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/js/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="/js/adminlte/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="/js/adminlte/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="/js/adminlte/css/fonts.googleapis.com.css">
+
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/bootstrap/js/bootstrap.js"></script>
+    <script src="/js/adminlte/js/adminlte.min.js"></script>
+    <script src="/js/plugins/twbsPagination/jquery.twbsPagination.min.js"></script>
+    <script src="/js/system/commonAll.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.submitBtn').click(function () {
+                $.post('/login.html', $('#loginForm').serialize(), function (data) {
+                    if (data.success) location.href = '/department/list.do';
+                     else alert(data.msg);
+
+                })
+            })
+        });
+    </script>
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+    <div class="login-logo">
+        <a href="http://www.wolfcode.cn"><b>My </b>CRM</a>
+    </div>
+    <div class="login-box-body">
+        <p class="login-box-msg">please enter your username/password</p>
+
+        <form method="post" id="loginForm">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" placeholder="username" name="username" value="admin">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" class="form-control" placeholder="password" name="password" value="1">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <button type="button" class="btn btn-primary btn-block btn-flat submitBtn">login</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

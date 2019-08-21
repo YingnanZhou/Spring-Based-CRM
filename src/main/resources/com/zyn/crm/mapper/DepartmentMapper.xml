@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyn.crm.mapper.DepartmentMapper">
+    <resultMap id="BaseResultMap" type="com.zyn.crm.domain.Department">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="sn" jdbcType="VARCHAR" property="sn"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM department
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.zyn.crm.domain.Department"
+            useGeneratedKeys="true">
+        INSERT INTO department (name, sn)
+        VALUES (#{name,jdbcType=VARCHAR}, #{sn,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.zyn.crm.domain.Department">
+        UPDATE department
+        SET name = #{name,jdbcType=VARCHAR},
+            sn   = #{sn,jdbcType=VARCHAR}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            id,
+            name,
+            sn
+        FROM department
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+            id,
+            name,
+            sn
+        FROM department
+    </select>
+    <select id="queryForCount" resultType="int">
+        select count(*) from department
+        <include refid="base_sql"/>
+    </select>
+    <select id="queryForList" resultType="com.zyn.crm.domain.Department">
+        select id,name,sn from department
+        <include refid="base_sql"/>
+
+    </select>
+    <sql id="base_sql">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (name like concat('%',#{keyword},'%') or sn like concat('%',#{keyword},'%'))
+            </if>
+        </where>
+    </sql>
+</mapper>
