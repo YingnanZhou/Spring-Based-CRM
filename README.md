@@ -26,5 +26,7 @@ Shiro
 
 * visited localhost:8080/login.html username:admin, password:1
 
-
+![Image text](https://raw.githubusercontent.com/YingnanZhou/Spring-Based-CRM/master/demo/WechatIMG368.png)
+![Image text](https://raw.githubusercontent.com/YingnanZhou/Spring-Based-CRM/master/demo/WechatIMG369.png)
+![Image text](https://raw.githubusercontent.com/YingnanZhou/Spring-Based-CRM/master/demo/WechatIMG370.png)
 
